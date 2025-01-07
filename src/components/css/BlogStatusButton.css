@@ -1,0 +1,26 @@
+/* src/components/BlogStatusButton.css */
+
+.status-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+  }
+  
+  .pending {
+    background-color: #ff9800;
+  }
+  
+  .approved {
+    background-color: #388e3c;
+  }
+  
+  .rejected {
+    background-color: #f44336;
+  }
+  
+  .status-button:hover {
+    opacity: 0.8;
+  }
+  
