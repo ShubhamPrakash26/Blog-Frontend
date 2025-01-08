@@ -10,7 +10,6 @@ const Sidebar = () => {
         <li><Link to="/approved-blogs">Approved Blogs</Link></li>
         <li><Link to="/pending-blogs">Pending Blogs</Link></li>
         <li><Link to="/rejected-blogs">Rejected Blogs</Link></li>
-        <li><Link to="/main-page">Main Page</Link></li>
         <li><Link to="/all-blogs">All Blogs</Link></li>
       </ul>
     </div>

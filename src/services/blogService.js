@@ -22,7 +22,28 @@ export const getBlogById = async (blogId) => {
   return response.data;
 };
 
-export const updateBlogStatus = async (blogId, newStatus) => {
-  const response = await axios.post(`${API_URL}/updateStatus`, { blogId, status: newStatus });
+export const approveBlog = async (blogId) => {
+  const response = await axios.post(`${API_URL}/approveBlog`, {
+    blogId,
+    approverName: 'Admin',
+    approverRole: 'Administrator'
+  });
+  return response.data;
+};
+
+export const rejectBlog = async (blogId) => {
+  const response = await axios.post(`${API_URL}/rejectBlog`, {
+    blogId,
+    rejectorName: 'Admin',
+    rejectorRole: 'Administrator'
+  });
+  return response.data;
+};
+export const pendingBlog = async (blogId) => {
+  const response = await axios.post(`${API_URL}/pendingBlog`, {
+    blogId,
+    Name: 'Admin',
+    Role: 'Administrator'
+  });
   return response.data;
 };

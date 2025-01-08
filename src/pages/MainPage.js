@@ -1,72 +1,68 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import BlogList from '../components/BlogList';
-import { getApprovedBlogs, getPendingBlogs, getRejectedBlogs } from '../services/blogService';
-import BlogStatusButton from '../components/BlogStatusButton';
+import { 
+  getApprovedBlogs, 
+  getPendingBlogs, 
+  getRejectedBlogs,
+  approveBlog,
+  rejectBlog
+} from '../services/blogService';
 import './css/MainPage.css';
-import axios from 'axios';
 
 const MainPage = () => {
-  const [approvedBlogs, setApprovedBlogs] = useState([]);
-  const [pendingBlogs, setPendingBlogs] = useState([]);
-  const [rejectedBlogs, setRejectedBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Function to fetch blogs
-  const fetchBlogs = async () => {
-    setApprovedBlogs(await getApprovedBlogs());
-    setPendingBlogs(await getPendingBlogs());
-    setRejectedBlogs(await getRejectedBlogs());
+  const fetchAllBlogs = async () => {
+    try {
+      const [approved, pending, rejected] = await Promise.all([
+        getApprovedBlogs(),
+        getPendingBlogs(),
+        getRejectedBlogs()
+      ]);
+      
+      setBlogs([...approved, ...pending, ...rejected]);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+      setError('Failed to fetch blogs');
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchBlogs(); 
+    fetchAllBlogs();
   }, []);
 
-  const updateBlogStatus = (blogId, newStatus) => {
-    axios
-      .post(`http://localhost:5000/api/blogs/update-status`, {
-        blogId,
-        status: newStatus,
-      })
-      .then((response) => {
-        fetchBlogs();  
-      })
-      .catch((error) => {
-        console.error('Error updating status:', error);
-      });
+  const handleStatusChange = async (blogId, newStatus) => {
+    try {
+      if (newStatus === 'Approved') {
+        await approveBlog(blogId);
+      } else if (newStatus === 'Rejected') {
+        await rejectBlog(blogId);
+      }
+      
+      // Refresh the blogs list after status update
+      await fetchAllBlogs();
+    } catch (error) {
+      console.error('Error updating blog status:', error);
+      setError('Failed to update blog status');
+    }
   };
 
-  const handleStatusChange = (blogId, currentStatus) => {
-    const newStatus = currentStatus === 'approved' ? 'rejected' : 'approved';
-    updateBlogStatus(blogId, newStatus);
-  };
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
 
   return (
-    <div>
-      <h1>Main Page</h1>
-      
-      <div>
-        <h2>Approved Blogs</h2>
-        <BlogList
-          blogs={approvedBlogs}
-          onStatusChange={handleStatusChange}  
-        />
-      </div>
-
-      <div>
-        <h2>Pending Blogs</h2>
-        <BlogList
-          blogs={pendingBlogs}
-          onStatusChange={handleStatusChange} 
-        />
-      </div>
-
-      <div>
-        <h2>Rejected Blogs</h2>
-        <BlogList
-          blogs={rejectedBlogs}
-          onStatusChange={handleStatusChange}  
-        />
-      </div>
+    <div className="main-page">
+      <h1>All Blogs</h1>
+      <BlogList blogs={blogs} onStatusChange={handleStatusChange} />
     </div>
   );
 };

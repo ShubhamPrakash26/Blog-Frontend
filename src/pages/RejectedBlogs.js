@@ -14,6 +14,7 @@ const RejectedBlogs = () => {
   }, []);
 
   return (
+    
     <div>
       <h1>Rejected Blogs</h1>
       {blogs.length === 0 ? (
