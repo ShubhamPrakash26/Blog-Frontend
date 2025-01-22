@@ -23,8 +23,6 @@ const CreateBlog = () => {
   };
 
   const handleImageChange = (e) => {
-    // For now, just storing the image URL
-    // You might want to implement actual file upload later
     setFormData({
       ...formData,
       blogImage: e.target.value
